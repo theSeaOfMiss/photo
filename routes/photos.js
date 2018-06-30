@@ -11,7 +11,7 @@ photos.push({
 
 exports.list = function (req, res) {
 	res.render('photos', {
-		title: 'Photos',
+		title: '图片',    // 标题
 		photos: photos
 	});
 };
