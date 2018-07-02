@@ -1,18 +1,40 @@
-var photos = [];
-photos.push({
-	name: 'Node.js Logo',
-	path: 'http://nodejs.org/images/logos/nodejs-green.png'
-});
+var Photo = require('../models/Photo');   // 引入Photo模型
+var path = require('path');
+var fs = require('fs');
+var join = path.join;
 
-photos.push({
-	name: 'Ryan Speaking',
-	path: 'http://nodejs.org/images/ryan-speaker.jpg'
-});
-
-exports.list = function (req, res) {
-	res.render('photos', {
-		title: '图片',    // 标题
-		photos: photos
+exports.list = function (req, res, next) {
+	Photo.find({}, function (err, photos) {   // {}查处photo集合中的所有记录
+		if (err) return next(err);
+		res.render('photos', {
+			title: '图片',    // 标题
+			photos: photos
+		});
 	});
 };
 
+exports.form = function (req, res) {
+	res.render('photos/upload.ejs', {
+		title: 'Photo upload'
+	});
+};
+
+exports.submit = function (dir) {
+	return function (req, res, next) {
+		var img = req.files[0];
+		var name = req.body.name || img.originalname;
+		var path = join(dir, img.originalname)
+
+		fs.rename(img.path, path, function (err) {
+			if (err) return next(err);
+
+			Photo.create({
+				name: name,
+				path: img.originalname
+			}, function (err) {
+				if (err) return next(err);
+				res.redirect('/');    // 重定向到首页
+			});
+		});
+	};
+};
