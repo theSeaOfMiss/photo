@@ -37,6 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/upload', photos.form);    // 增加处
 app.post('/upload', photos.submit(app.get('photos')));    // 增加处
+app.get('/photo/:id/download', photos.download(app.get('photos')));   // 增加处
 app.use('/', photos.list);    // 修改处
 app.use('/users', usersRouter);
 

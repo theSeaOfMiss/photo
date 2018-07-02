@@ -38,3 +38,15 @@ exports.submit = function (dir) {
 		});
 	};
 };
+
+exports.download = function (dir) {
+	return function (req, res, next) {
+		var id = req.params.id;
+		Photo.findById(id, function (err, photo) {    // 加载照片记录
+			if (err) return next(err);
+
+			var path = join(dir, photo.path);   // 构造指向文件的绝对路径
+			res.download(path);   // 传输文件
+		});
+	};
+};
